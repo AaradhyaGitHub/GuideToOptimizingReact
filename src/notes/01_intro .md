@@ -102,5 +102,7 @@ This re-renders App so every Component that's getting rendered by App.
 - Memo should only be wrapped as high on the component tree as possible
 - If wrapped around all function, checking the props draws out more unnecary performance price. Use it with care, not necessary for smaller parts, only use when absolutely necessary 
 
+## Solution 1: Even more powerful method -> Component Composition 
+- Currently, the input changes state on the App component on every key stroke 
 
 
