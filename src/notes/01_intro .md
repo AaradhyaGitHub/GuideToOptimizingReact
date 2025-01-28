@@ -1,83 +1,106 @@
-# React Component Rendering: A Clear Guide
+# React Component Rendering: A Detailed Explanation
 
-Let me explain how React renders components, making it easy to understand the flow and hierarchy.
+## Starting Point: App.jsx
 
-## Initial Rendering Process
+React starts rendering component functions, beginning with `App.jsx`. Why App? It's the first and only file being highlighted to run in the `main.jsx`. This is our entry point into the React application.
 
-React begins its rendering journey with `App.jsx`. Why? Because it's specifically designated as the entry point in `main.jsx`.
+## Initial Setup Phase
 
-### Setting Up vs Executing
+The functions and state are all set, but importantly, they're not executed yet - they're just being set up. This is a crucial distinction in understanding React's rendering process.
 
 ```jsx
-// Components and state are initially set up, not executed
+// Setting up state and functions, not executing them yet
 function App() {
   const [count, setCount] = useState(0);
-  // ... more setup
+  // ... more setup code
 }
 ```
 
-## Component Types
+## Component Types and Distinction
 
-React works with two types of components:
+There's a mix of native and custom Components in React applications. They're typically distinguished by their first letter:
+- Native components: Start with lowercase (e.g., `div`, `p`, `span`)
+- Custom components: Start with uppercase (e.g., `Header`, `Counter`)
 
-**Native Components**
-- Start with lowercase letters (e.g., `div`, `span`)
-- Built into React
+## Custom Component Rendering Flow
 
-**Custom Components**
-- Start with uppercase letters (e.g., `Header`, `Counter`)
-- Created by developers
+When React encounters a custom component like `<Header />`, it:
+1. Jumps to the Header file
+2. Runs that file's code
+3. The rest of the code in App won't render until Header completes its execution
 
-## Component Tree Building
-
-### Header Component Example
 ```jsx
+// Example of component flow
 <App>
-  <Header /> {/* React jumps to Header file */}
-  {/* App pauses until Header completes */}
+  <Header /> {/* React processes this completely first */}
+  {/* Other components wait */}
 </App>
 ```
 
-### Counter Component Flow
+After JSX of Header is returned by React, this part of the component tree is complete. At the top level, we have App → Header. Since Header doesn't have any children, it marks the end of that branch.
+
+## Counter Component Branch
+
+React also processes another branch with the Counter Component. This Component receives a prop called `initialCount`:
+
 ```jsx
-<App>
-  <Counter initialCount={count}>
-    <IconButton><Icon /></IconButton>
-    <CounterOutput />
-    <IconButton><Icon /></IconButton>
-  </Counter>
-</App>
+<Counter initialCount={someValue} />
 ```
 
-## Props Flow
+## Props Flow Understanding
 
+The flow of props follows this pattern:
 1. Component receives prop name
 2. Prop name receives value
-3. Value flows down to component
+3. Value is passed to prop which is passed to Component
 
-For example:
-```jsx
-// Prop passing
-<Counter initialCount={count} />
-// Counter receives and uses the prop
-function Counter({ initialCount }) {
-  // ... component logic
-}
-```
+Back at Counter, the same principle applies - everything gets created but NOT executed initially.
+
+## Deeper Component Tree
+
+The Counter component's JSX has more complex structure with three children:
+1. IconButton
+2. CounterOutput
+3. IconButton
+
+The two IconButton components each render out an Icon child, extending that part of the tree further. The CounterOutput doesn't render any custom Components, so it stops there.
 
 ## Component Tree Visualization
 
 ```
 App
-├── Header
+├── Header (no children)
 └── Counter
     ├── IconButton
     │   └── Icon
-    ├── CounterOutput
+    ├── CounterOutput (no children)
     └── IconButton
         └── Icon
 ```
 
-Understanding this tree structure is fundamental to working with React effectively. Each component waits for its children to complete rendering before finalizing its own render process.
+Understanding that React builds this tree of components is crucial for:
+- Debugging rendering issues
+- Understanding data flow
+- Optimizing component performance
+- Managing component lifecycles
 
-This hierarchical rendering ensures that your application's UI is built consistently and predictably, with data flowing from parent to child components through props.
+This hierarchical structure ensures organized rendering and maintainable code structure. React processes each branch completely before moving to siblings, ensuring predictable rendering patterns.
+
+Remember: The key is understanding that components are set up first, then executed in a specific order based on their position in the component tree.
+
+## Optimizing React with that understanding of Component and Component execution? 
+Our Demo App currently has a place where we can optimize 
+We have a input field in App.jsx and on every key stroke, we are updating the state 
+This re-renders App so every Component that's getting rendered by App.
+
+## Solution 1: Memo Function 
+- React has a built in function that prevents unnecessary execution of components
+- Import `memo` function and wrap the entire function in in it and store it in a const and return that const 
+- What it does: It looks at the props in the component function and whenever the Component fucntion would re-render again from the prop change, memo function looks at the old prop and the new prop. 
+- If the prop values are exactly same, (in memory), the component function does not execute again.
+- Makes sense. Why re-ender the Component if the state didn't change. But if the internal state changes, it triggers the component function. 
+- Memo should only be wrapped as high on the component tree as possible
+- If wrapped around all function, checking the props draws out more unnecary performance price. Use it with care, not necessary for smaller parts, only use when absolutely necessary 
+
+
+
