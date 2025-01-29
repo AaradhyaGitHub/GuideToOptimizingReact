@@ -342,8 +342,26 @@ export default function CounterHistory({ history }) {
 
 This ensures our `CounterHistory` behaves as expected, keeping the UI and state **in sync** even when the list dynamically changes. 🚀  
 
----
+### **Another Advantage of Using `id` Instead of `index`**  
 
+Beyond preventing **state jumping**, using `id` also optimizes React’s rendering behavior.  
+
+### **Before (Using `index` as Key - Inefficient Rendering)**  
+- Every time we click the button, **all list items flash** (re-render).  
+- React **throws away the old list** and re-renders the entire thing.  
+- This happens because React **sees completely new HTML** and **doesn’t know which parts remain the same**.  
+
+### **After (Using `count.id` as Key - Optimized Rendering)**  
+- Now, **only the first element updates**, while the rest remain untouched.  
+- React **understands that only one new item is added** and doesn’t unnecessarily re-render the entire list.  
+- This results in **better performance** and a **smoother UI**.  
+
+### **Why This Happens**  
+Humans intuitively understand that only one new item is added while the rest just shift down. But React, without unique keys, **doesn’t make that distinction**—it sees an entirely new list structure and **redraws everything**.  
+
+By using `count.id`, we’re **helping React recognize which elements should persist**, avoiding unnecessary work. 🚀
+
+---
 
 This demonstrates that **state persists based on position, not value**—React remembers which item was selected based on **where it appears in the list**.
 
