@@ -93,16 +93,75 @@ Our Demo App currently has a place where we can optimize
 We have a input field in App.jsx and on every key stroke, we are updating the state 
 This re-renders App so every Component that's getting rendered by App.
 
-## Solution 1: Memo Function 
-- React has a built in function that prevents unnecessary execution of components
-- Import `memo` function and wrap the entire function in in it and store it in a const and return that const 
-- What it does: It looks at the props in the component function and whenever the Component fucntion would re-render again from the prop change, memo function looks at the old prop and the new prop. 
-- If the prop values are exactly same, (in memory), the component function does not execute again.
-- Makes sense. Why re-ender the Component if the state didn't change. But if the internal state changes, it triggers the component function. 
-- Memo should only be wrapped as high on the component tree as possible
-- If wrapped around all function, checking the props draws out more unnecary performance price. Use it with care, not necessary for smaller parts, only use when absolutely necessary 
+Here’s your refined and expanded version of the notes while keeping the original structure, vibe, and step-by-step approach intact:  
 
-## Solution 1: Even more powerful method -> Component Composition 
-- Currently, the input changes state on the App component on every key stroke 
+---
+
+## Solution 1: Memo Function  
+
+- React has a built-in function called `memo` that helps prevent unnecessary re-renders of components.  
+- To use it, import the `memo` function, wrap your entire functional component in it, store the wrapped function in a `const`, and return that `const`.  
+- **What it does:**  
+  - It looks at the props being passed into the component.  
+  - Whenever the component would normally re-render due to a prop change, the `memo` function checks the old prop values against the new ones.  
+  - **If the prop values are exactly the same in memory, React skips re-executing the component function.**  
+- **Why does this matter?**  
+  - If the component’s state or props didn't change, why bother re-rendering it? Makes sense, right? This optimization can save performance when used correctly.  
+  - However, **internal state changes (via `useState`) still trigger a re-render**, since `memo` only prevents unnecessary re-renders from prop changes, not state updates.  
+- **Where should you use it?**  
+  - Memo should be wrapped around components as high up in the component tree as possible.  
+  - **BUT!** Be careful—if you wrap every component in `memo`, React will spend unnecessary time checking the props, which can actually hurt performance rather than improve it.  
+  - **Rule of thumb:** Only use `memo` where performance bottlenecks exist, especially for large, frequently updating components.  
+
+---
+
+## Solution 2: A More Powerful Method → Component Composition  
+
+- **Current Issue:**  
+  - Right now, every keystroke in an input field triggers a state change at the **App** component level, causing it to re-render unnecessarily.  
+- **Better Approach:**  
+  - We extract this functionality into a separate component called `ConfigureCounter.jsx`, which **isolates the state updates** to this component instead of affecting the entire app.  
+
+### Here’s the new `ConfigureCounter.jsx`:  
+```jsx
+import { useState } from "react";
+
+export default function ConfigureCounter({ onSet }) {
+  const [enteredNumber, setEnteredNumber] = useState(0);
+
+  function handleChange(event) {
+    setEnteredNumber(+event.target.value);
+  }
+
+  function handleSetClick() {
+    onSet(enteredNumber);
+    setEnteredNumber(0);
+  }
+
+  return (
+    <section id="configure-counter">
+      <h2>Set Counter</h2>
+      <input type="number" onChange={handleChange} value={enteredNumber} />
+      <button onClick={handleSetClick}>Set</button>
+    </section>
+  );
+}
+```
+
+### **Why is this better?**  
+- Now, only `ConfigureCounter` re-renders when the user types in the input field.  
+- The main App component (and other unrelated components) are **no longer affected** by every keystroke.  
+- **We no longer need `memo`!**  
+  - Since we've removed the source of unnecessary re-renders, there's no need to optimize with `memo`.  
+  - Keeping `memo` in the `Counter` component now would **add extra performance overhead instead of helping**.  
+
+### **Key Takeaways:**  
+✅ Use `memo` wisely—don’t overuse it, especially when it provides no actual benefit.  
+✅ Component Composition (breaking components into smaller, independent units) is often a better way to solve performance issues.  
+✅ Keeping state changes local to the component that actually needs them improves performance and maintainability.  
+
+---
+
+🚀🚀🚀
 
 
