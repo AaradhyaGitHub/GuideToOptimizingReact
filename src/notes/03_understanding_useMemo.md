@@ -1,7 +1,6 @@
 Here’s the enhanced version of your notes, making them clearer, more structured, and keeping the same step-by-step, personable style:  
 
 ---
-
 ## **Unnecessary Prime Number Calculations in the Background**  
 
 Looking at our terminal logs, we notice something strange: **the prime number calculation keeps running every time we click the increment button.**  
@@ -118,9 +117,6 @@ function Counter({ initialCount }) {
 ✅ **Use `memo`** to **prevent unnecessary component re-renders** when props haven’t changed.  
 ✅ **Use `useMemo`** to **cache expensive function results** and only recompute them when necessary.  
 ✅ **Both should be used sparingly!** Overusing them can actually **hurt performance** instead of improving it.  
-
-
-
 
 
 ## **🚀 The Fix: `useMemo` to Cache Expensive Computations**  
